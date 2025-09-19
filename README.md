@@ -1,204 +1,225 @@
 # Bomia Annotator
 
-Sistema standalone de anotações para o Bomia Engine. Ferramenta especializada para criar e gerenciar anotações em imagens, mantendo total compatibilidade com o formato JSON do Bomia Engine.
+Sistema de anotação de imagens para o projeto Bomia Engine.
 
-## Características
+## Projeto Portaria-Entrada
 
-- Interface de anotação idêntica ao Bomia Engine
-- Suporte completo para múltiplos projetos (sinterização, carbonização, portaria, etc.)
-- Criação de bounding boxes com categorias
-- Sistema de fixed bboxes para anotações padronizadas
-- Suporte opcional para inferência com modelos YOLO
-- Navegação eficiente entre frames
-- Auto-skip após criação de bbox
+Sistema para anotar frames da câmera de entrada da portaria. O objetivo é identificar e marcar veículos na área de entrada.
 
-## Instalação
+### Categorias de Anotação
 
-### 1. Clone o repositório
+**O que você deve marcar em cada frame:**
+
+| Número | Nome | Quando usar |
+|--------|------|-------------|
+| 1 | veiculo_na_portaria | Quando tem um veículo parado na cancela esperando para entrar |
+| 2 | parcialmente_visivel | Quando a placa do veículo está cortada ou não dá para ver completa |
+| 3 | caminhao_presente | Quando tem um caminhão no frame mas ele não está na cancela |
+| 4 | sem_caminhao | Quando não tem nenhum caminhão no frame |
+
+**Importante:**
+- Se o caminhão está na cancela, use categoria 1, não a 3
+- Cada veículo deve ter seu próprio retângulo
+- O retângulo deve cobrir o veículo inteiro que está visível
+
+## Instalação Passo a Passo
+
+### Passo 1: Baixar o programa
+
+Abra o terminal e digite:
 
 ```bash
-git clone https://github.com/seu-usuario/bomia-annotator.git
+git clone https://github.com/shudbr/bomia-annotator.git
 cd bomia-annotator
 ```
 
-### 2. Crie um ambiente virtual Python
+### Passo 2: Preparar o Python
+
+Digite um comando por vez:
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # No Linux/Mac
-# ou
-venv\Scripts\activate  # No Windows
-```
-
-### 3. Instale as dependências
-
-```bash
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure o projeto
+**Nota:** No Windows, o segundo comando é diferente:
+```bash
+venv\Scripts\activate
+```
+
+### Passo 3: Configurar o sistema
+
+Copie o arquivo de configuração:
 
 ```bash
-# Copie o arquivo de configuração exemplo
 cp configs/local.example.yaml configs/local.yaml
-
-# Edite o arquivo para definir seu projeto ativo
-nano configs/local.yaml
 ```
 
-## Configuração
-
-### Definir projeto ativo
-
-No arquivo `configs/local.yaml`, defina o projeto que você quer anotar:
+Abra o arquivo `configs/local.yaml` em um editor de texto e adicione:
 
 ```yaml
-# Para portaria-entrada
 active_project: "portaria-entrada"
 
-# Para sinterizacao-1
-active_project: "sinterizacao-1"
-
-# Para carbonizacao-1
-active_project: "carbonizacao-1"
+s3:
+  access_key: "PEDIR_PARA_EQUIPE"
+  secret_key: "PEDIR_PARA_EQUIPE"
 ```
 
-### Estrutura de diretórios esperada
+**Importante:** Peça as credenciais (access_key e secret_key) para a equipe de desenvolvimento.
 
-O sistema espera encontrar as imagens em:
+### Passo 4: Baixar as imagens para anotar
+
+Para baixar 1000 imagens recentes:
+```bash
+python scripts/sync/s3_downloader.py --project portaria-entrada --limit 1000
 ```
-data/
-└── [nome-do-projeto]/
-    ├── raw-frames/       # Imagens para anotar
-    └── annotations.json  # Arquivo de anotações (será criado automaticamente)
+
+Para baixar imagens de um dia específico:
+```bash
+python scripts/sync/s3_downloader.py --project portaria-entrada --date 2024-01-19
 ```
 
-## Uso
+As imagens serão salvas em: `data/portaria-entrada/raw-frames/`
 
-### Executar o anotador
+### Passo 5: Começar a anotar
 
 ```bash
 python scripts/annotate.py
 ```
 
-Ou especificar o projeto via linha de comando:
+## Como Usar o Programa
+
+### Criar um retângulo (bounding box)
+
+1. Clique e segure o botão esquerdo do mouse
+2. Arraste para fazer um retângulo ao redor do veículo
+3. Solte o botão do mouse
+4. Pressione o número da categoria (1, 2, 3 ou 4)
+
+### Teclas para navegar
+
+| Tecla | O que faz |
+|-------|-----------|
+| A ou ← | Volta uma imagem |
+| D ou → | Próxima imagem |
+| W | Pula 10 imagens para frente |
+| S | Volta 10 imagens |
+| [ | Vai para imagem anterior que já tem anotação |
+| ] | Vai para próxima imagem que já tem anotação |
+| G | Digite um número para ir direto para aquela imagem |
+
+### Teclas para editar
+
+| Tecla | O que faz |
+|-------|-----------|
+| TAB | Seleciona o próximo retângulo na imagem |
+| DELETE | Apaga o retângulo selecionado |
+| X | Apaga todos os retângulos da imagem atual |
+| R | Copia o último retângulo que você fez |
+| 1-4 | Define a categoria do retângulo selecionado |
+
+### Outras teclas úteis
+
+| Tecla | O que faz |
+|-------|-----------|
+| K | Liga/desliga o pulo automático (depois de criar um retângulo, pula para próxima imagem) |
+| H | Mostra ou esconde a ajuda na tela |
+| T | Mostra quantas imagens você já anotou |
+| Q | Pressione 2 vezes seguidas para sair do programa (salva automaticamente) |
+
+## Rotina Diária de Trabalho
+
+### Manhã - Preparar o trabalho
+
+1. Abra o terminal
+2. Entre na pasta do projeto:
+   ```bash
+   cd bomia-annotator
+   ```
+
+3. Ative o ambiente Python:
+   ```bash
+   source venv/bin/activate
+   ```
+
+4. Baixe novas imagens:
+   ```bash
+   python scripts/sync/s3_downloader.py --project portaria-entrada --limit 500
+   ```
+
+5. Comece a anotar:
+   ```bash
+   python scripts/annotate.py
+   ```
+
+### Durante o trabalho
+
+1. Use a tecla K para ativar o pulo automático (mais rápido)
+2. Pressione T de vez em quando para ver seu progresso
+3. O programa salva automaticamente suas anotações
+
+### Fim do dia
+
+1. Pressione Q duas vezes para sair
+2. Suas anotações estão salvas em: `data/portaria-entrada/annotations.json`
+
+## Resolução de Problemas
+
+### "No images found" - Não encontrou imagens
+
+Isso significa que não tem imagens na pasta. Solução:
 
 ```bash
-python scripts/annotate.py --project portaria-entrada
+python scripts/sync/s3_downloader.py --project portaria-entrada --limit 100
 ```
 
-### Com modelo para inferência (opcional)
+### "Access Denied" - Acesso negado ao baixar imagens
 
+As credenciais do S3 estão erradas. Solução:
+1. Abra o arquivo `configs/local.yaml`
+2. Verifique se colocou a access_key e secret_key corretas
+3. Peça novas credenciais se necessário
+
+### O programa não abre
+
+Verifique se ativou o ambiente Python:
 ```bash
-python scripts/annotate.py --model data/portaria-entrada/models/portaria-entrada/weights/best.pt
+source venv/bin/activate
 ```
 
-### Com filtro de categoria
+Você deve ver `(venv)` no início da linha do terminal.
 
-```bash
-python scripts/annotate.py --category-filter "veiculo_na_portaria"
+### As teclas não funcionam
+
+Certifique-se que a janela da imagem está selecionada (clique nela).
+
+## Informações Técnicas
+
+### Onde ficam os arquivos
+
+```
+bomia-annotator/
+├── configs/
+│   └── local.yaml           # Suas configurações
+├── data/
+│   └── portaria-entrada/
+│       ├── raw-frames/      # Imagens baixadas
+│       └── annotations.json # Suas anotações
+└── scripts/
+    └── annotate.py          # Programa principal
 ```
 
-## Atalhos de Teclado
+### Formato das anotações
 
-### Navegação
-- `A` / `←`: Frame anterior
-- `D` / `→`: Próximo frame
-- `W` / `↑`: Pular 10 frames para frente
-- `S` / `↓`: Pular 10 frames para trás
-- `[`: Frame anotado anterior
-- `]`: Próximo frame anotado
-- `G`: Ir para frame específico
+As anotações são salvas em formato JSON. Cada imagem tem uma lista de retângulos com:
+- Coordenadas do retângulo (x1, y1, x2, y2)
+- Categoria (1, 2, 3 ou 4)
+- Nome da categoria
+- Quem fez (human = pessoa, inference = computador)
 
-### Anotações
-- **Mouse**: Clique e arraste para criar bbox
-- `0-9`: Define categoria para bbox selecionado
-- `I/M/F`: Define subcategoria (início/meio/fim)
-- `DELETE`: Remove bbox selecionado
-- `TAB`: Seleciona próximo bbox
-- `SHIFT+TAB`: Seleciona bbox anterior
-- `X`: Remove todos os bboxes do frame atual
+## Contato
 
-### Funcionalidades Especiais
-- `B`: Cria fixed bboxes (para projetos configurados)
-- `R`: Repete último bbox criado no frame atual
-- `I` (maiúsculo): Executa inferência (requer modelo)
-- `SPACE`: Confirma inferência selecionada
-- `C`: Confirma todas as inferências
-- `ESC`: Cancela inferências temporárias
-
-### Modos de Auto-skip
-- `K`: Alterna modo auto-skip (OFF/Frame/Anotado)
-
-### Sistema
-- `H`: Mostra/oculta ajuda
-- `T`: Mostra/oculta estatísticas
-- `V`: Alterna modo de visualização
-- `Q` (2x): Sair do programa
-
-## Categorias por Projeto
-
-### Portaria Entrada
-1. `veiculo_na_portaria`
-2. `parcialmente_visivel`
-3. `caminhao_presente`
-4. `sem_caminhao`
-
-### Sinterização-1
-0. `operador`
-1. `esteira_carga_sinter`
-2. `panela_cura_ativa`
-3. `panela_virando`
-4. `estado_indefinido`
-5. `panela_sem_material`
-
-### Carbonização-1
-0. `revisar`
-1. `com_fumaca`
-2. `sem_fumaca`
-3. `operador`
-4. `trator`
-5. `grua`
-6. `caminhao_toras`
-7. `veiculo_outro`
-8. `forno_aberto`
-9. `fumaca_secagem`
-
-## Formato de Saída
-
-As anotações são salvas em formato JSON compatível com o Bomia Engine:
-
-```json
-{
-  "1234567890.jpg": {
-    "annotations": [
-      {
-        "bbox": [x1, y1, x2, y2],
-        "category_id": "1",
-        "category_name": "veiculo_na_portaria",
-        "annotation_source": "human"
-      }
-    ],
-    "original_path": "/path/to/image.jpg",
-    "created_at_iso": "2024-01-19T10:30:00",
-    "updated_at_iso": "2024-01-19T10:35:00"
-  }
-}
-```
-
-## Requisitos
-
-- Python 3.11+
-- OpenCV
-- NumPy
-- PyYAML
-- Ultralytics (opcional, para inferência)
-- PyTorch (opcional, para inferência)
-
-## Suporte
-
-Para reportar problemas ou sugestões, abra uma issue no repositório.
-
-## Licença
-
-Propriedade da Shud. Uso autorizado apenas para anotadores oficiais do projeto Bomia.
+- Problemas com o programa: Reportar no GitHub
+- Dúvidas sobre as categorias: Perguntar para o supervisor
+- Credenciais do S3: Pedir para a equipe de TI
