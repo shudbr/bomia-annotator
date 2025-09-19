@@ -54,16 +54,8 @@ O projeto `portaria-entrada` visa a detecção e classificação de veículos em
 
 | ID | Nome | Descrição | Critérios de Aplicação |
 |----|------|-----------|------------------------|
-| 1 | `veiculo_na_portaria` | Veículo em posição de espera na cancela | Veículo completamente parado, posicionado frontalmente à cancela, aguardando liberação de acesso |
+| 1 | `veiculo_na_portaria` | Veículo em posição de espera na regiao da portaria. | Veículo (carro, moto, caminhão) posicionado na área delimitada da portaria, aguardando liberação de acesso. |ss
 
-#### Categorias em Desenvolvimento
-
-```yaml
-# Futuras implementações (não utilizar em produção)
-2: parcialmente_visivel  # Placa com oclusão parcial
-3: caminhao_presente     # Caminhão em área não-crítica
-4: sem_caminhao         # Ausência de veículos de carga
-```
 
 ### Formato de Dados
 
@@ -426,26 +418,9 @@ projects:
         '1': [0, 255, 0]
 ```
 
-## Métricas e Qualidade
-
-### KPIs de Anotação
-
-- **Throughput**: 60-120 frames/hora esperado
-- **Accuracy**: >95% de concordância inter-anotador
-- **Coverage**: 100% dos objetos visíveis anotados
-- **Consistency**: <5% variação em bboxes similares
-
-### Validação de Qualidade
-
-```bash
-# Script de validação (em desenvolvimento)
-python scripts/validate_annotations.py --project portaria-entrada --strict
-```
-
 ## Licença e Contato
 
 Propriedade intelectual da Shud Tecnologia Ltda.
 Uso restrito a colaboradores autorizados do projeto Bomia.
 
-**Suporte técnico**: desenvolvimento@shud.com.br
 **Repositório**: https://github.com/shudbr/bomia-annotator
