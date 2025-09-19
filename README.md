@@ -1,3 +1,15 @@
+<div align="center">
+<img src="https://shud01.nyc3.cdn.digitaloceanspaces.com/assets/logo-shud-azul.svg" alt="Logo Shud" width="200"/>
+<h1>Bomia Engine</h1>
+</div>
+
+<div align="center">
+  
+[![Status do Projeto](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)](https://github.com/shudbr/bomia-engine) [![Python Version](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+
+</div>
+
+
 # Bomia Annotator
 
 Sistema standalone de anotação para o projeto Bomia Engine, especializado em detecção e classificação de objetos em streams de vídeo de segurança industrial.
