@@ -1,0 +1,526 @@
+# configs/default.yaml - Configuração padrão do Bomia Engine
+
+# Project definitions with categories, visualization, and connection settings
+projects:
+  sinterizacao-1:
+    description: "Sinter process monitoring"
+    
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "192.168.1.100"
+      port: 554
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=0"
+    
+    categories:
+      '0': 'operador'
+      '1': 'esteira_carga_sinter'
+      '2': 'panela_cura_ativa'
+      '3': 'panela_virando'
+      '4': 'estado_indefinido'
+      '5': 'panela_sem_material'
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+    visualization:
+      colors:
+        '0': [255, 0, 0]     # Blue
+        '1': [0, 255, 0]     # Green
+        '2': [0, 0, 255]     # Red
+        '3': [255, 255, 0]   # Cyan
+        '4': [255, 0, 255]   # Magenta
+        '5': [0, 165, 255]   # Orange
+    
+    annotation:
+      fixed_bboxes:
+        - [541, 532, 1258, 808]  # Main sinterizacao bbox
+      add_random_coords: true
+      random_variation: 4
+    
+  carbonizacao-1:
+    description: "Carbonization process monitoring - Camera 1"
+    
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      rtsp_url: "rtsp://your-rtsp-server/stream"
+    
+    categories:
+      '0': 'revisar'
+      '1': 'com_fumaca'
+      '2': 'sem_fumaca'
+      '3': 'operador'
+      '4': 'trator'
+      '5': 'grua'
+      '6': 'caminhao_toras'
+      '7': 'veiculo_outro'
+      '8': 'forno_aberto'
+      '9': 'fumaca_secagem'
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+    visualization:
+      colors:
+        '0': [0, 0, 255]     # Red (revisar)
+        '1': [0, 255, 0]     # Green (com_fumaca)
+        '2': [0, 0, 255]     # Red (sem_fumaca)
+        '3': [255, 0, 0]     # Blue (operador)
+        '4': [0, 255, 255]   # Yellow (trator)
+        '5': [255, 0, 255]   # Magenta (grua)
+        '6': [255, 165, 0]   # Orange (caminhao_toras)
+        '7': [128, 0, 128]   # Purple (veiculo_outro)
+        '8': [0, 128, 0]     # Dark Green (forno_aberto)
+        '9': [255, 192, 203] # Pink (fumaca_secagem)
+      label_mapping:
+        "revisar": "Revisar"
+        "com_fumaca": "Fumaca"
+        "sem_fumaca": "Sem Fumaca"
+        "trator": "Maquina"
+        "operador": "Colaborador"
+        "forno_aberto": "Forno Aberto"
+        "grua": "Grua Carregador"
+        "caminhao_toras": "Caminhao Toras"
+        "veiculo_outro": "Veiculo Outro"
+        "fumaca_secagem": "Fumaca Secagem"
+    annotation:
+      fixed_bboxes:
+        - bbox: [751, 106, 763, 137]
+          category: "8"  # forno_aberto
+        - bbox: [731, 98, 742, 131]
+          category: "8"  # forno_aberto
+        - bbox: [715, 94, 726, 122]
+          category: "8"  # forno_aberto
+        - bbox: [772, 110, 784, 146]
+          category: "8"  # forno_aberto
+        - bbox: [252, 379, 285, 483]
+          category: "8"  # forno_aberto
+        - bbox: [294, 280, 316, 371]
+          category: "8"  # forno_aberto
+        - bbox: [334, 231, 348, 286]
+          category: "8"  # forno_aberto
+        - bbox: [345, 203, 360, 247]
+          category: "8"  # forno_aberto
+        - bbox: [357, 179, 371, 230]
+          category: "8"  # forno_aberto
+        - bbox: [367, 167, 382, 215]
+          category: "8"  # forno_aberto
+        - bbox: [378, 143, 392, 191]
+          category: "8"  # forno_aberto
+        - bbox: [386, 124, 401, 167]
+          category: "8"  # forno_aberto
+        - bbox: [396, 106, 411, 144]
+          category: "8"  # forno_aberto
+        - bbox: [405, 92, 420, 124]
+          category: "8"  # forno_aberto
+        - bbox: [414, 79, 430, 109]
+          category: "8"  # forno_aberto
+        - bbox: [1237, 321, 1270, 408]
+          category: "8"  # forno_aberto
+        - bbox: [1147, 268, 1176, 349]
+          category: "8"  # forno_aberto
+        - bbox: [1068, 229, 1094, 304]
+          category: "8"  # forno_aberto
+        - bbox: [1000, 194, 1023, 269]
+          category: "8"  # forno_aberto
+        - bbox: [944, 173, 964, 236]
+          category: "8"  # forno_aberto
+        - bbox: [901, 155, 921, 206]
+          category: "8"  # forno_aberto
+        - bbox: [862, 141, 877, 188]
+          category: "8"  # forno_aberto
+        # New com_fumaca annotations from annotations.json
+        - bbox: [132, 208, 163, 263]
+          category: "1"  # com_fumaca
+        - bbox: [156, 177, 187, 232]
+          category: "1"  # com_fumaca
+        - bbox: [257, 137, 279, 169]
+          category: "1"  # com_fumaca
+        - bbox: [267, 116, 294, 153]
+          category: "1"  # com_fumaca
+        - bbox: [314, 104, 330, 134]
+          category: "1"  # com_fumaca
+        - bbox: [319, 86, 338, 115]
+          category: "1"  # com_fumaca
+        - bbox: [346, 80, 360, 105]
+          category: "1"  # com_fumaca
+        - bbox: [351, 66, 365, 91]
+          category: "1"  # com_fumaca
+        - bbox: [367, 69, 379, 89]
+          category: "1"  # com_fumaca
+        - bbox: [374, 56, 384, 83]
+          category: "1"  # com_fumaca
+        - bbox: [382, 54, 397, 72]
+          category: "1"  # com_fumaca
+        - bbox: [751, 67, 761, 86]
+          category: "1"  # com_fumaca
+        - bbox: [767, 68, 781, 93]
+          category: "1"  # com_fumaca
+        - bbox: [789, 78, 802, 99]
+          category: "1"  # com_fumaca
+        - bbox: [815, 85, 830, 111]
+          category: "1"  # com_fumaca
+        - bbox: [889, 101, 906, 127]
+          category: "1"  # com_fumaca
+        - bbox: [963, 122, 981, 150]
+          category: "1"  # com_fumaca
+        - bbox: [977, 124, 1000, 161]
+          category: "1"  # com_fumaca
+        - bbox: [1077, 157, 1096, 189]
+          category: "1"  # com_fumaca
+        - bbox: [1102, 169, 1127, 207]
+          category: "1"  # com_fumaca
+        - bbox: [1233, 216, 1256, 257]
+          category: "1"  # com_fumaca
+  
+  tombador-1:
+    description: "Tombador process monitoring - Camera 1"
+    
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "192.168.1.101"
+      port: 554
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=0"
+    
+    categories:
+      '0': 'tora_entrada'
+      '1': 'tora_saida'
+      '2': 'operador'
+      '3': 'maquina_tombador'
+    
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+    
+    visualization:
+      colors:
+        '0': [0, 255, 0]     # Green
+        '1': [0, 0, 255]     # Red
+        '2': [255, 0, 0]     # Blue
+        '3': [255, 255, 0]   # Cyan
+
+  tombador-2:
+    description: "Tombador process monitoring - Camera 2"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "192.168.1.102"
+      port: 554
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=0"
+
+    categories:
+      '0': 'tora_entrada'
+      '1': 'tora_saida'
+      '2': 'operador'
+      '3': 'maquina_tombador'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [0, 255, 0]     # Green
+        '1': [0, 0, 255]     # Red
+        '2': [255, 0, 0]     # Blue
+        '3': [255, 255, 0]   # Cyan
+
+  portaria-entrada:
+    description: "Portaria entrada monitoring - License plate visibility tracking"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "186.193.186.34"
+      port: 8552
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=0"
+
+    categories:
+      '1': 'veiculo_na_portaria'
+      '2': 'parcialmente_visivel'
+      '3': 'caminhao_presente'
+      '4': 'sem_caminhao'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '1': [0, 0, 255]     # Red (veiculo_na_portaria)
+        '2': [0, 255, 255]   # Yellow (parcialmente_visivel)
+        '3': [255, 0, 0]     # Blue (caminhao_presente)
+        '4': [128, 128, 128] # Gray (sem_caminhao)
+
+  portaria-saida:
+    description: "Portaria saída monitoring - License plate visibility tracking"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "186.193.186.34"
+      port: 8552
+      rtsp_stream_path: "/cam/realmonitor?channel=2&subtype=0"
+
+    categories:
+      '1': 'veiculo_na_portaria'
+      '2': 'parcialmente_visivel'
+      '3': 'caminhao_presente'
+      '4': 'sem_caminhao'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '1': [0, 0, 255]     # Red (veiculo_na_portaria)
+        '2': [0, 255, 255]   # Yellow (parcialmente_visivel)
+        '3': [255, 0, 0]     # Blue (caminhao_presente)
+        '4': [128, 128, 128] # Gray (sem_caminhao)
+
+  movimento:
+    description: "Movimento monitoring - Movement detection camera"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "200.217.229.122"
+      port: 8556
+      rtsp_stream_path: "/cam/realmonitor?channel=3&subtype=1"
+
+    categories:
+      '0': 'movimento_detectado'
+      '1': 'sem_movimento'
+      '2': 'pessoa'
+      '3': 'veiculo'
+      '4': 'objeto'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [0, 255, 0]     # Green (movimento_detectado)
+        '1': [128, 128, 128] # Gray (sem_movimento)
+        '2': [255, 0, 0]     # Blue (pessoa)
+        '3': [0, 255, 255]   # Yellow (veiculo)
+        '4': [255, 0, 255]   # Magenta (objeto)
+
+  portico:
+    description: "Pórtico monitoring - Gate access control"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "200.217.229.122"
+      port: 8551
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=1"
+
+    categories:
+      '0': 'veiculo_entrada'
+      '1': 'veiculo_saida'
+      '2': 'pessoa'
+      '3': 'placa_visivel'
+      '4': 'placa_nao_visivel'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [0, 255, 0]     # Green (veiculo_entrada)
+        '1': [0, 0, 255]     # Red (veiculo_saida)
+        '2': [255, 0, 0]     # Blue (pessoa)
+        '3': [0, 255, 255]   # Yellow (placa_visivel)
+        '4': [128, 128, 128] # Gray (placa_nao_visivel)
+
+  estacionamento_escritorio:
+    description: "Estacionamento Escritório monitoring - Parking area surveillance"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "200.217.229.122"
+      port: 8553
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=1"
+
+    categories:
+      '0': 'vaga_livre'
+      '1': 'vaga_ocupada'
+      '2': 'veiculo_movimento'
+      '3': 'pessoa'
+      '4': 'objeto_estranho'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [0, 255, 0]     # Green (vaga_livre)
+        '1': [0, 0, 255]     # Red (vaga_ocupada)
+        '2': [0, 255, 255]   # Yellow (veiculo_movimento)
+        '3': [255, 0, 0]     # Blue (pessoa)
+        '4': [255, 0, 255]   # Magenta (objeto_estranho)
+
+  almoxarifado:
+    description: "Almoxarifado monitoring - Warehouse surveillance"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "200.217.229.122"
+      port: 8554
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=1"
+
+    categories:
+      '0': 'pessoa'
+      '1': 'empilhadeira'
+      '2': 'material_movimentacao'
+      '3': 'area_livre'
+      '4': 'area_ocupada'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [255, 0, 0]     # Blue (pessoa)
+        '1': [0, 255, 255]   # Yellow (empilhadeira)
+        '2': [255, 0, 255]   # Magenta (material_movimentacao)
+        '3': [0, 255, 0]     # Green (area_livre)
+        '4': [0, 0, 255]     # Red (area_ocupada)
+
+  estacionamento_patio:
+    description: "Estacionamento Pátio monitoring - Yard parking surveillance"
+
+    # Camera connection template (real values go in local.yaml)
+    camera:
+      username: "camera_user"
+      password: "camera_password"
+      ip: "200.217.229.122"
+      port: 8555
+      rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=1"
+
+    categories:
+      '0': 'caminhao'
+      '1': 'carro'
+      '2': 'maquina_pesada'
+      '3': 'pessoa'
+      '4': 'area_livre'
+
+    subcategories:
+      'i': 'inicio'
+      'm': 'meio'
+      'f': 'fim'
+
+    visualization:
+      colors:
+        '0': [255, 165, 0]   # Orange (caminhao)
+        '1': [0, 255, 255]   # Yellow (carro)
+        '2': [255, 0, 255]   # Magenta (maquina_pesada)
+        '3': [255, 0, 0]     # Blue (pessoa)
+        '4': [0, 255, 0]     # Green (area_livre)
+
+# Note: project.name is automatically set based on active_project (no need to define here)
+
+paths:
+  # Caminhos base para arquivos e diretórios (usando interpolação)
+  data_root: "data/{project.name}"
+  models: "{paths.data_root}/models"
+  weights: "{paths.models}/weights"
+  model_plots: "{paths.models}/plots"
+  raw_frames: "{paths.data_root}/raw-frames"
+  plots: "{paths.data_root}/plots"
+  annotations: "{paths.data_root}/annotations.json"
+  logs: "logs/{project.name}_logs.log"
+  dataset: "{paths.data_root}/dataset"
+  yolo_dataset: "{paths.dataset}/yolo"
+  db_path: "data/{project.name}/database/detections.db"
+  reference_frame_dir: "data/{project.name}/database/reference_frames"
+
+camera:
+  # Opção 1 - URL RTSP pública
+  # rtsp_url: "rtsp://rtsp.bomia.com.br:8554/sinterizacao-cam-1"
+  
+  # Opção 2 - Configuração de câmera local
+  username: "camera_user"
+  password: "camera_password"
+  ip: "192.168.1.100"
+  port: 554
+  rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=0"
+
+s3:
+  bucket: "your-bucket-name"
+  region: "nyc3"
+  endpoint: "nyc3.digitaloceanspaces.com"
+  access_key: "YOUR_DIGITALOCEAN_SPACES_ACCESS_KEY"
+  secret_key: "YOUR_DIGITALOCEAN_SPACES_SECRET_KEY"
+
+logging:
+  level: "INFO"
+  file: "{paths.logs}"  # Usa o path definido acima
+
+collection:
+  interval_seconds: 2
+  jpeg_quality: 75
+  default_duration_minutes: 1440  # 24 horas
+  # RTSP reconnection settings
+  max_consecutive_failures: 10  # Reconnect after N consecutive read failures
+  reconnect_delay_seconds: 2    # Wait time before reconnecting
+  failure_retry_delay_seconds: 0.5  # Wait time between individual read retries
+
+annotation:
+  window_width_percent: 0.8
+  window_height_percent: 0.8
+
+dataset:
+  split_ratios: [0.8, 0.1, 0.1]  # Train, val, test
+
+training:
+  epochs: 100
+  batch_size: 16
+  base_model: "yolo11n.pt"
+  img_size: 640
+  
+inference:
+  # Common inference settings
+  confidence_threshold: 0.35
+  window_name: "Bomia Engine - Inference"
+  
+  # DB tracking settings
+  tracking:
+    enabled: false
+    aggregate_interval: 1
+    state_change_threshold: 0.7
+    reference_frame_interval: 300
+  
+  # Visualization settings  
+  visualization:
+    show_confidence: true
+    box_thickness: 2
+    font_scale: 0.5
+    text_color: [255, 255, 255]

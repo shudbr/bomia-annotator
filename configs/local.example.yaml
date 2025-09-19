@@ -1,0 +1,24 @@
+# Local configuration example
+# Copy this file to local.yaml and customize for your environment
+
+# Active project (uncomment and set your project)
+# active_project: "portaria-entrada"
+
+# Example overrides for different projects:
+
+# For sinterizacao-1:
+# active_project: "sinterizacao-1"
+
+# For carbonizacao-1:
+# active_project: "carbonizacao-1"
+
+# For tombador-1:
+# active_project: "tombador-1"
+
+# For portaria-entrada:
+# active_project: "portaria-entrada"
+
+# You can override any setting from default.yaml here
+# For example, to change paths:
+# paths:
+#   data_root: "/custom/path/to/data/{project.name}"
