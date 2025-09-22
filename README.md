@@ -100,11 +100,36 @@ O projeto `portaria-entrada` visa a detecção e classificação de veículos em
 - **Sistema de coordenadas**: Pixels absolutos da imagem original
 - **Validação**: Área mínima de 100px², sem sobreposição superior a 50% IoU
 
-## Instalação
+## Quick Start
+
+```bash
+# 1. Clone e entre no diretório
+git clone https://github.com/shudbr/bomia-annotator.git
+cd bomia-annotator
+
+# 2. Setup inicial
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
+mkdir -p logs
+
+# 3. Configure credenciais
+cp configs/local.example.yaml configs/local.yaml
+# Edite configs/local.yaml com suas credenciais AWS
+
+# 4. Baixe frames de teste
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --limit 100
+
+# 5. Execute o anotador
+python scripts/annotate.py
+```
+
+## Instalação Detalhada
 
 ### Requisitos de Sistema
 
-- Python 3.11+
+- Python 3.11+ (compatível com Python 3.12)
 - OpenCV 4.7.0+
 - 4GB RAM mínimo
 - 10GB espaço em disco para frames
@@ -123,8 +148,14 @@ source venv/bin/activate  # Linux/macOS
 # ou
 venv\Scripts\activate     # Windows
 
+# Atualizar pip (importante para Python 3.12)
+pip install --upgrade pip setuptools wheel
+
 # Instalação de dependências
 pip install -r requirements.txt
+
+# Criar pasta de logs (obrigatório)
+mkdir -p logs
 ```
 
 ### Configuração
@@ -170,54 +201,73 @@ export AWS_SECRET_ACCESS_KEY="your-secret-key"
 
 ## Sincronização com S3
 
+### Pré-requisitos
+
+1. **Criar pasta de logs** (obrigatório):
+```bash
+mkdir -p logs
+```
+
+2. **Configurar credenciais AWS** em `configs/local.yaml`:
+```yaml
+s3:
+  access_key: "SEU_AWS_ACCESS_KEY_ID"
+  secret_key: "SEU_AWS_SECRET_ACCESS_KEY"
+```
+
 ### Download de Frames
 
 #### Sintaxe Completa
 
 ```bash
-python scripts/sync/s3_downloader.py [OPTIONS]
+python scripts/sync/s3_downloader.py <local_dir> [OPTIONS]
 ```
 
-#### Opções Disponíveis
+#### Argumentos e Opções
 
-| Opção | Descrição | Default |
-|-------|-----------|---------|
-| `--project` | Nome do projeto | `portaria-entrada` |
+| Argumento/Opção | Descrição | Default |
+|-----------------|-----------|---------|
+| `local_dir` | Diretório local para download (obrigatório) | - |
+| `--remote-prefix` | Prefixo S3 customizado | Auto-detectado |
+| `--workers` | Threads paralelas para download | 20 |
 | `--limit` | Número máximo de frames | Sem limite |
-| `--date` | Data específica (YYYY-MM-DD) | Todos |
-| `--start-date` | Data inicial do range | - |
-| `--end-date` | Data final do range | - |
-| `--prefix` | Prefixo S3 customizado | Auto-detectado |
-| `--workers` | Threads paralelas | 10 |
-| `--force` | Sobrescrever existentes | False |
+| `--no-skip-existing` | Sobrescrever arquivos existentes | False |
+| `--ext` | Filtrar por extensão (ex: .jpg) | Todos |
+| `--dry-run` | Simular download sem baixar | False |
 
 #### Exemplos de Uso
 
 ```bash
-# Download dos últimos 1000 frames
-python scripts/sync/s3_downloader.py --limit 1000
+# Download completo do projeto portaria-entrada
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames
 
-# Download de data específica
-python scripts/sync/s3_downloader.py --date 2024-01-19
+# Download completo do projeto portaria-saida
+python scripts/sync/s3_downloader.py data/portaria-saida/raw-frames
 
-# Download de intervalo
-python scripts/sync/s3_downloader.py --start-date 2024-01-15 --end-date 2024-01-19
+# Download com limite de arquivos (para teste)
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --limit 100
 
-# Download com paralelismo aumentado
-python scripts/sync/s3_downloader.py --limit 5000 --workers 20
+# Download com mais threads (conexão rápida)
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --workers 30
 
-# Forçar re-download
-python scripts/sync/s3_downloader.py --date 2024-01-19 --force
+# Download apenas arquivos .jpg
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --ext .jpg
+
+# Preview sem baixar (dry run)
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --dry-run
+
+# Forçar re-download de arquivos existentes
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --no-skip-existing
 ```
 
 ### Listagem de Arquivos Disponíveis
 
 ```bash
-# Listar arquivos no bucket
-python scripts/sync/s3_list_files.py --project portaria-entrada
+# Listar arquivos no bucket (necessita implementação atualizada)
+python scripts/sync/s3_list_files.py data/portaria-entrada/raw-frames
 
-# Contar arquivos por data
-python scripts/sync/s3_list_files.py --project portaria-entrada --count-by-date
+# Com contagem por data (se implementado)
+python scripts/sync/s3_list_files.py data/portaria-entrada/raw-frames --count-by-date
 ```
 
 ## Utilização
@@ -351,6 +401,22 @@ python scripts/sync/s3_downloader.py --workers 5 --limit 1000
 
 ### Problemas Comuns
 
+#### ModuleNotFoundError: No module named 'src.bomia'
+
+Este erro foi corrigido. Caso apareça em versões antigas:
+```bash
+# O import correto é:
+from src.config.manager import ConfigManager
+# Não use: from src.bomia.config_manager import ConfigManager
+```
+
+#### FileNotFoundError: logs/s3_download.log
+
+```bash
+# Criar pasta de logs antes de executar scripts
+mkdir -p logs
+```
+
 #### ImportError em módulos
 
 ```bash
@@ -361,14 +427,24 @@ which python  # Deve apontar para venv/bin/python
 pip install --upgrade -r requirements.txt
 ```
 
+#### Erro de instalação com Python 3.12
+
+```bash
+# Atualizar pip e setuptools primeiro
+pip install --upgrade pip setuptools wheel
+
+# Depois instalar as dependências
+pip install -r requirements.txt
+```
+
 #### S3 Connection Timeout
 
 ```bash
-# Verificar credenciais
-aws s3 ls s3://bomia-frames/portaria-entrada/ --profile bomia
+# Verificar credenciais em configs/local.yaml
+cat configs/local.yaml | grep -A 2 "s3:"
 
-# Testar com endpoint direto
-python scripts/sync/s3_list_files.py --debug
+# Testar listagem de arquivos
+python scripts/sync/s3_list_files.py data/portaria-entrada/raw-frames
 ```
 
 #### OpenCV Window Not Responding
@@ -379,6 +455,16 @@ python -c "import cv2; print(cv2.getBuildInformation())"
 
 # Forçar backend específico
 export OPENCV_VIDEOIO_PRIORITY_BACKEND=0
+```
+
+#### No images found in directory
+
+```bash
+# Verificar se há frames baixados
+ls -la data/portaria-entrada/raw-frames/
+
+# Se vazio, baixar frames primeiro
+python scripts/sync/s3_downloader.py data/portaria-entrada/raw-frames --limit 100
 ```
 
 ### Logs e Debug
