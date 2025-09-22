@@ -15,7 +15,7 @@ from datetime import datetime
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 # Import from project
-from src.bomia.config_manager import ConfigManager
+from src.config.manager import ConfigManager
 
 # Configure logging
 logging.basicConfig(level=logging.WARNING)  # Reduce noise
