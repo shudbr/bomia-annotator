@@ -233,7 +233,7 @@ projects:
         '3': [255, 255, 0]   # Cyan
 
   portaria-entrada:
-    description: "Portaria entrada monitoring - License plate visibility tracking"
+    description: "Portaria entrada monitoring - Vehicle type classification and tracking"
 
     # Camera connection template (real values go in local.yaml)
     camera:
@@ -245,9 +245,11 @@ projects:
 
     categories:
       '1': 'veiculo_na_portaria'
-      '2': 'parcialmente_visivel'
-      '3': 'caminhao_presente'
-      '4': 'sem_caminhao'
+      '2': 'trator'
+      '3': 'caminhao'
+      '4': 'moto'
+      '5': 'carro'
+      '6': 'veiculo_diferente'
 
     subcategories:
       'i': 'inicio'
@@ -257,12 +259,14 @@ projects:
     visualization:
       colors:
         '1': [0, 0, 255]     # Red (veiculo_na_portaria)
-        '2': [0, 255, 255]   # Yellow (parcialmente_visivel)
-        '3': [255, 0, 0]     # Blue (caminhao_presente)
-        '4': [128, 128, 128] # Gray (sem_caminhao)
+        '2': [0, 255, 0]     # Green (trator)
+        '3': [255, 165, 0]   # Orange (caminhao)
+        '4': [255, 255, 0]   # Cyan (moto)
+        '5': [255, 0, 0]     # Blue (carro)
+        '6': [255, 0, 255]   # Magenta (veiculo_diferente)
 
   portaria-saida:
-    description: "Portaria saída monitoring - License plate visibility tracking"
+    description: "Portaria saída monitoring - Vehicle type classification and tracking"
 
     # Camera connection template (real values go in local.yaml)
     camera:
@@ -274,9 +278,11 @@ projects:
 
     categories:
       '1': 'veiculo_na_portaria'
-      '2': 'parcialmente_visivel'
-      '3': 'caminhao_presente'
-      '4': 'sem_caminhao'
+      '2': 'trator'
+      '3': 'caminhao'
+      '4': 'moto'
+      '5': 'carro'
+      '6': 'veiculo_diferente'
 
     subcategories:
       'i': 'inicio'
@@ -286,9 +292,11 @@ projects:
     visualization:
       colors:
         '1': [0, 0, 255]     # Red (veiculo_na_portaria)
-        '2': [0, 255, 255]   # Yellow (parcialmente_visivel)
-        '3': [255, 0, 0]     # Blue (caminhao_presente)
-        '4': [128, 128, 128] # Gray (sem_caminhao)
+        '2': [0, 255, 0]     # Green (trator)
+        '3': [255, 165, 0]   # Orange (caminhao)
+        '4': [255, 255, 0]   # Cyan (moto)
+        '5': [255, 0, 0]     # Blue (carro)
+        '6': [255, 0, 255]   # Magenta (veiculo_diferente)
 
   movimento:
     description: "Movimento monitoring - Movement detection camera"
