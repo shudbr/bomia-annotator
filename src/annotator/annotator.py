@@ -328,6 +328,12 @@ class UnifiedAnnotator:
              logger.warning("Mouse callback ignored: Invalid display shape.")
              return
 
+        # Check if Shift key is held for nested bbox mode
+        shift_held = (flags & cv2.EVENT_FLAG_SHIFTKEY) != 0
+
+        # Update nested mode state for visual feedback
+        self.state.nested_mode = shift_held
+
         # Clamp coordinates to be within display bounds
         x = max(0, min(x, disp_w - 1))
         y = max(0, min(y, disp_h - 1))
@@ -339,23 +345,31 @@ class UnifiedAnnotator:
             if self.state.show_help or self.state.show_stats or self.state.quit_confirm:
                 logger.debug("Mouse interaction disabled while overlay is active.")
                 return
-            
-            # First, check if click is on an existing bbox for selection
-            clicked_bbox_index = self._find_clicked_bbox(x, y)
-            if clicked_bbox_index >= 0:
-                # Click hit a permanent annotation - select it
-                self.state.current_annotation_index = clicked_bbox_index
-                logger.debug(f"Selected permanent annotation {clicked_bbox_index} at click ({x}, {y})")
-                return  # Don't start drawing
-            elif clicked_bbox_index == -2:
-                # Click hit a temporary inference bbox - already handled in _find_clicked_bbox
-                logger.debug(f"Selected temporary inference at click ({x}, {y})")
-                return  # Don't start drawing
-            
-            # No bbox clicked - start drawing a new one
-            self.state.drawing = True
-            self.state.start_point = (x, y)
-            logger.debug(f"Mouse down at ({x}, {y}). Drawing started.")
+
+            # Skip bbox selection if Shift is held (nested bbox mode)
+            if shift_held:
+                # Start drawing immediately for nested bbox
+                self.state.drawing = True
+                self.state.start_point = (x, y)
+                logger.debug(f"Nested bbox mode: Mouse down at ({x}, {y}). Drawing started (Shift held).")
+                print("Nested bbox mode active - drawing inside existing bbox")
+            else:
+                # Normal behavior: check if click is on an existing bbox for selection
+                clicked_bbox_index = self._find_clicked_bbox(x, y)
+                if clicked_bbox_index >= 0:
+                    # Click hit a permanent annotation - select it
+                    self.state.current_annotation_index = clicked_bbox_index
+                    logger.debug(f"Selected permanent annotation {clicked_bbox_index} at click ({x}, {y})")
+                    return  # Don't start drawing
+                elif clicked_bbox_index == -2:
+                    # Click hit a temporary inference bbox - already handled in _find_clicked_bbox
+                    logger.debug(f"Selected temporary inference at click ({x}, {y})")
+                    return  # Don't start drawing
+
+                # No bbox clicked - start drawing a new one
+                self.state.drawing = True
+                self.state.start_point = (x, y)
+                logger.debug(f"Mouse down at ({x}, {y}). Drawing started.")
 
         # --- Mouse Move: Draw Temporary Box Preview ---
         elif event == cv2.EVENT_MOUSEMOVE:
@@ -391,7 +405,9 @@ class UnifiedAnnotator:
                      self.state.auto_inference, # Auto-inference state
                      self.state.auto_fixed_bbox, # Auto-fixed bbox state
                      self.state.auto_skip, # Auto-skip state
-                     self.state.display_mode if hasattr(self.state, 'display_mode') else 0 # Display mode
+                     self.state.display_mode if hasattr(self.state, 'display_mode') else 0, # Display mode
+                     self.key_handler.get_category_filter_name() if hasattr(self.key_handler, 'get_category_filter_name') else None, # Category filter
+                     self.state.nested_mode if hasattr(self.state, 'nested_mode') else False # Nested mode
                  )
 
                 # Draw the temporary rectangle being dragged *on top*
@@ -1276,7 +1292,8 @@ class UnifiedAnnotator:
                     self.state.auto_fixed_bbox,  # Auto-fixed bbox state
                     self.state.auto_skip,        # Auto-skip state
                     self.state.display_mode if hasattr(self.state, 'display_mode') else 0,  # Display mode
-                    self.key_handler.get_category_filter_name()  # Category filter name
+                    self.key_handler.get_category_filter_name(),  # Category filter name
+                    self.state.nested_mode if hasattr(self.state, 'nested_mode') else False  # Nested mode
                 )
 
                 # --- Display the frame ---

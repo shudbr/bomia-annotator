@@ -152,7 +152,8 @@ class AnnotationRenderer:
         auto_fixed_bbox: bool = False,
         auto_skip: int = 0,
         display_mode: int = 0,
-        category_filter: Optional[str] = None
+        category_filter: Optional[str] = None,
+        nested_mode: bool = False
     ) -> np.ndarray:
         """Draws all UI elements onto the display image."""
         # --- Input Validation ---
@@ -203,7 +204,7 @@ class AnnotationRenderer:
 
         # Draw text information only in full display mode
         if display_mode == 0:
-            self._draw_header_text(overlay, filename, current_index, total_files, model_info, auto_inference, auto_fixed_bbox, auto_skip, category_filter)
+            self._draw_header_text(overlay, filename, current_index, total_files, model_info, auto_inference, auto_fixed_bbox, auto_skip, category_filter, nested_mode)
             self._draw_annotation_status(overlay, file_data, inference_info) # <-- MODIFIED internally
             self._draw_footer_text(overlay, filename, current_index, total_files, file_data, inference_info, model_info)
 
@@ -473,7 +474,7 @@ class AnnotationRenderer:
                    self.BASE_COLORS.get('text'), 1, cv2.LINE_AA)
         return x + cv2.getTextSize(text, self.font, self.font_scale_small, 1)[0][0] + 20
 
-    def _draw_header_text(self, overlay: np.ndarray, filename: str, current_index: int, total_files: int, model_info: Optional[Dict[str, Any]] = None, auto_inference: bool = False, auto_fixed_bbox: bool = False, auto_skip: int = 0, category_filter: Optional[str] = None):
+    def _draw_header_text(self, overlay: np.ndarray, filename: str, current_index: int, total_files: int, model_info: Optional[Dict[str, Any]] = None, auto_inference: bool = False, auto_fixed_bbox: bool = False, auto_skip: int = 0, category_filter: Optional[str] = None, nested_mode: bool = False):
         """Draws professional header with progress bar, status indicators and organized layout."""
         disp_h, disp_w = overlay.shape[:2]
         if disp_h <= 0 or disp_w <= 0: return
@@ -505,6 +506,7 @@ class AnnotationRenderer:
 
         # Main text line positioning
         text_y = center_y + 5
+        text_y_line2 = text_y + 20  # Second line for additional info
         thickness = 1  # Clean thin text
 
         
@@ -653,6 +655,18 @@ class AnnotationRenderer:
                 (filter_w, _), _ = cv2.getTextSize(filter_text, self.font, font_scale, thickness)
                 filter_x = disp_w - filter_w - 15  # 15px from right edge
                 cv2.putText(overlay, filter_text, (filter_x, text_y_line2), self.font, font_scale, filter_color, thickness, self.line_type)
+
+            # Part 5: Nested Mode indicator (center-right, prominent)
+            if nested_mode:
+                nested_text = "[SHIFT] Nested BBox Mode"
+                nested_color = (0, 255, 255)  # Bright yellow/cyan
+                (nested_w, _), _ = cv2.getTextSize(nested_text, self.font, font_scale * 1.2, thickness + 1)
+                # Position it center-right, or adjust based on category filter
+                if category_filter:
+                    nested_x = filter_x - nested_w - 30  # To the left of category filter
+                else:
+                    nested_x = disp_w - nested_w - 15  # Right edge
+                cv2.putText(overlay, nested_text, (nested_x, text_y_line2), self.font, font_scale * 1.2, nested_color, thickness + 1, self.line_type)
 
     # --- MODIFIED: Removed top-level subcategory display ---
     def _draw_annotation_status(self, overlay: np.ndarray, file_data: Dict[str, Any], inference_info: Optional[Dict[str, Any]] = None):
@@ -1060,6 +1074,7 @@ class AnnotationRenderer:
         # Define control descriptions
         controls = [
             ("Mouse Drag", "Draw Bounding Box (adds to list)"),
+            ("Shift+Click", "Draw Nested BBox (inside existing)"),
             ("[Left]/[Right] / [A]/[D]", "Prev/Next Frame"),
             ("[Up]/[Down] / [W]/[S]", "Jump +/- 10 Frames"),
             ("[PgUp]/[PgDown]", "Jump +/- 100 Frames"),

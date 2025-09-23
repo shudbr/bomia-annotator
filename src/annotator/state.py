@@ -58,6 +58,9 @@ class AnnotationState:
     last_pressed_category_id: Optional[str] = None  # Category ID from last 0-9 key press
     last_pressed_category_name: Optional[str] = None  # Category name from last 0-9 key press
 
+    # Nested bbox mode tracking
+    nested_mode: bool = False  # When true, allows drawing inside existing bboxes
+
     def reset_drawing(self):
         """Resets the drawing-related state."""
         self.drawing = False

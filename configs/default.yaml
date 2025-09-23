@@ -250,6 +250,7 @@ projects:
       '4': 'moto'
       '5': 'carro'
       '6': 'veiculo_diferente'
+      '7': 'placa'
 
     subcategories:
       'i': 'inicio'
@@ -264,6 +265,7 @@ projects:
         '4': [255, 255, 0]   # Cyan (moto)
         '5': [255, 0, 0]     # Blue (carro)
         '6': [255, 0, 255]   # Magenta (veiculo_diferente)
+        '7': [0, 255, 255]   # Yellow (placa)
 
   portaria-saida:
     description: "Portaria saída monitoring - Vehicle type classification and tracking"
