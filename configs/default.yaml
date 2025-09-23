@@ -285,6 +285,8 @@ projects:
       '4': 'moto'
       '5': 'carro'
       '6': 'veiculo_diferente'
+      '7': 'placa'
+      
 
     subcategories:
       'i': 'inicio'
