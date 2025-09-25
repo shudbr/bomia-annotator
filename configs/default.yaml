@@ -345,11 +345,8 @@ projects:
       rtsp_stream_path: "/cam/realmonitor?channel=1&subtype=1"
 
     categories:
-      '0': 'veiculo_entrada'
-      '1': 'veiculo_saida'
-      '2': 'pessoa'
-      '3': 'placa_visivel'
-      '4': 'placa_nao_visivel'
+      '1': 'caminhao'
+      '2': 'placa'
 
     subcategories:
       'i': 'inicio'
@@ -358,11 +355,8 @@ projects:
 
     visualization:
       colors:
-        '0': [0, 255, 0]     # Green (veiculo_entrada)
-        '1': [0, 0, 255]     # Red (veiculo_saida)
-        '2': [255, 0, 0]     # Blue (pessoa)
-        '3': [0, 255, 255]   # Yellow (placa_visivel)
-        '4': [128, 128, 128] # Gray (placa_nao_visivel)
+        '1': [255, 165, 0]   # Orange (caminhao)
+        '2': [0, 255, 255]   # Yellow (placa)
 
   estacionamento_escritorio:
     description: "Estacionamento Escritório monitoring - Parking area surveillance"
