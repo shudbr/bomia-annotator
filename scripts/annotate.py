@@ -68,15 +68,15 @@ def main():
         """Resolve model path: CLI arg > project default > None"""
         if args_model:
             return args_model  # User explicitly provided model
-        
-        # Try default project model
-        project_name = config.get("project.name")
-        default_model = f"data/{project_name}/models/{project_name}/weights/best.pt"
-        
+
+        # Try default project model using config paths
         from pathlib import Path
-        if Path(default_model).exists():
-            return default_model
-        
+        weights_path = config.path("weights")
+        default_model = weights_path / "best.pt"
+
+        if default_model.exists():
+            return str(default_model)
+
         return None  # No model available
 
     model_path = resolve_model_path(config, args.model)
